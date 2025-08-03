@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BookStore - Category</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  
+  <script src="js/books-data.js"></script>
+  <script src="js/app.js" defer></script>
+
+  <style>
+    .books-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .book-card {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 1rem;
+      border-radius: 8px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    .book-title {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+    .book-author {
+      font-size: 1rem;
+      color: #ccc;
+      margin-bottom: 0.5rem;
+    }
+    .book-price {
+      font-size: 1.1rem;
+      color: #FFD700;
+      margin-bottom: 1rem;
+    }
+    .btn {
+      display: inline-block;
+      padding: 0.4rem 0.8rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 0.2rem;
+      font-size: 0.9rem;
+    }
+    .btn-primary {
+      background: #4CAF50;
+      color: white;
+    }
+    .btn-secondary {
+      background: #FFD700;
+      color: black;
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <button class="back-btn" onclick="window.location.href='index.html'">← Back</button>
+    <div class="logo" onclick="window.location.href='index.html'">📚 BookStore</div>
+    <div class="cart-icon" onclick="window.location.href='cart.html'">
+      🛒<span class="cart-count" id="cartCount">0</span>
+    </div>
+  </header>
+
+  <main class="page active">
+    <div class="page-header">
+      <h1 class="page-title" id="categoryTitle">Category Books</h1>
+      <p class="page-subtitle" id="categorySubtitle">Choose your next favorite book</p>
+    </div>
+    
+    <div class="books-grid" id="booksGrid"></div>
+  </main>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const category = new URLSearchParams(window.location.search).get('cat');
+      const categoryTitle = document.getElementById('categoryTitle');
+      const categorySubtitle = document.getElementById('categorySubtitle');
+      const booksGrid = document.getElementById('booksGrid');
+
+      // Ensure booksData is globally available
+      const data = window.booksData || booksData;
+
+      if (!category || !data[category]) {
+        categoryTitle.innerText = "Category Not Found";
+        categorySubtitle.innerText = "";
+        return;
+      }
+
+      const formattedCategory = category
+        .replace(/_/g, ' ')
+        .replace(/\b\w/g, l => l.toUpperCase());
+
+      categoryTitle.innerText = `${formattedCategory} Books`;
+      categorySubtitle.innerText = `Explore amazing ${formattedCategory} books`;
+
+      data[category].forEach(book => {
+        const bookCard = document.createElement('div');
+        bookCard.classList.add('book-card');
+        bookCard.innerHTML = `
+          <div class="book-title">${book.title}</div>
+          <div class="book-author">by ${book.author}</div>
+          <div class="book-price">₹${book.price}</div>
+          <button class="btn btn-primary" onclick="viewBook(${book.id}, '${category}')">View Details</button>
+          <button class="btn btn-secondary" onclick="addToCartFromCategory(${book.id}, '${category}')">Add to Cart</button>
+        `;
+        booksGrid.appendChild(bookCard);
+      });
+    });
+
+    function viewBook(bookId, category) {
+      window.location.href = `book-details.html?id=${bookId}&cat=${category}`;
+    }
+
+    function addToCartFromCategory(bookId, category) {
+      addToCart(bookId, category);
+    }
+  </script>
+</body>
+</html>

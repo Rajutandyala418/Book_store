@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Details</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/books-data.js" defer></script>
+    <script src="js/app.js" defer></script>
+</head>
+<body>
+    <header class="header">
+        <button class="back-btn" onclick="window.history.back()">← Back</button>
+        <div class="logo" onclick="window.location.href='index.html'">📚 BookStore</div>
+        <div class="cart-icon" onclick="window.location.href='cart.html'">
+            🛒<span class="cart-count" id="cartCount">0</span>
+        </div>
+    </header>
+
+    <main class="page active">
+        <div class="book-details" id="bookDetailsContent"></div>
+    </main>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const bookId = parseInt(urlParams.get('id'));
+            const category = urlParams.get('cat');
+
+            let book = null;
+
+            if (category && booksData[category]) {
+                book = booksData[category].find(b => b.id === bookId);
+            }
+
+            if (!book) {
+                document.getElementById('bookDetailsContent').innerHTML = "<h2>Book not found</h2>";
+                return;
+            }
+
+            document.getElementById('bookDetailsContent').innerHTML = `
+                <div class="book-details-content">
+                    <div class="book-cover-large" style="background-image:url('${book.image}')"></div>
+                    <div class="book-info">
+                        <h2>${book.title}</h2>
+                        <p><strong>Author:</strong> ${book.author}</p>
+                        <p><strong>Year:</strong> ${book.year}</p>
+                        <p><strong>Pages:</strong> ${book.pages}</p>
+                        <p><strong>Price:</strong> ₹${book.price}</p>
+                        <p><strong>Description:</strong> ${book.description}</p>
+                        <div style="margin-top: 2rem;">
+                            <button class="btn btn-primary" onclick="addToCart(${book.id}, '${category}')">Add to Cart</button>
+                            <button class="btn btn-secondary" onclick="buyNow(${book.id}, '${category}')">Buy Now</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            updateCartCount();
+        });
+
+        function buyNow(bookId, category) {
+            const selectedBook = booksData[category]?.find(b => b.id === bookId);
+            if (selectedBook) {
+                sessionStorage.setItem('buyNowItem', JSON.stringify(selectedBook));
+                sessionStorage.removeItem('cartPayment');
+                window.location.href = 'payment.html';
+            }
+        }
+    </script>
+</body>
+</html>

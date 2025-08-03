@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookStore - Home</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/books-data.js"></script>
+    <script src="js/app.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+            color: #fff;
+        }
+
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.8;
+            animation: twinkle 3s infinite ease-in-out;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: #4CAF50;
+            color: #fff;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .cart-icon {
+            position: relative;
+            cursor: pointer;
+            font-size: 2rem;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -12px;
+            background: #ff4757;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .page-header {
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: #FFD700;
+        }
+
+        .page-subtitle {
+            font-size: 1.2rem;
+            color: #ccc;
+        }
+
+        /* Search Bar */
+        .search-bar-container {
+            max-width: 600px;
+            margin: 1rem auto;
+            display: flex;
+            position: relative;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            font-size: 1rem;
+            border-radius: 6px 0 0 6px;
+            border: none;
+            outline: none;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .search-button {
+            padding: 0 1rem;
+            background: #FFD700;
+            color: #000;
+            border: none;
+            border-radius: 0 6px 6px 0;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .clear-button {
+            position: absolute;
+            right: 70px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #ff4757;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 0.4rem 0.6rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+            display: none;
+        }
+
+        .search-suggestions {
+            position: absolute;
+            top: 110%;
+            left: 0;
+            right: 0;
+            background: #222;
+            border-radius: 6px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+            z-index: 10;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .suggestion-item {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            color: #fff;
+            transition: background 0.2s;
+        }
+
+        .suggestion-item:hover {
+            background: #444;
+        }
+
+        /* Grid layout for categories */
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin: 2rem auto;
+            padding: 2rem;
+            max-width: 1200px;
+            background: rgba(250, 250, 250, 0.1);
+            border-radius: 12px;
+        }
+
+        .category-card {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            text-align: center;
+            padding: 1rem;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .category-image {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 0.5rem;
+            object-fit: cover;
+            border-radius: 8px;
+            background: #eee;
+        }
+
+        .category-name {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #FFD700;
+        }
+
+        .category-description {
+            font-size: 0.9rem;
+            color: #ddd;
+        }
+
+        @media (max-width: 768px) {
+            .categories-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+
+    <header class="header">
+        <div class="logo" onclick="window.location.href='index.html'">📚 BookStore</div>
+        <div class="cart-icon" onclick="window.location.href='cart.html'">
+            🛍️
+            <span class="cart-count" id="cartCount">0</span>
+        </div>
+    </header>
+
+    <main class="page active">
+        <div class="page-header">
+            <h1 class="page-title">Welcome to BookStore</h1>
+            <p class="page-subtitle">Discover amazing books across different categories</p>
+        </div>
+        
+        <!-- Search Bar -->
+        <div class="search-bar-container">
+            <input type="text" id="searchInput" class="search-input" placeholder="Search categories...">
+            <button class="clear-button" id="clearButton">Clear</button>
+            <button class="search-button" id="searchButton">Search</button>
+            <div class="search-suggestions" id="suggestionsBox"></div>
+        </div>
+
+        <div class="categories-grid" id="categoriesGrid">
+            <!-- Categories will be added dynamically -->
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Star background
+            const starsContainer = document.getElementById('stars');
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                star.style.top = Math.random() * 100 + '%';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                starsContainer.appendChild(star);
+            }
+
+            const categoriesGrid = document.getElementById('categoriesGrid');
+            const searchInput = document.getElementById('searchInput');
+            const searchButton = document.getElementById('searchButton');
+            const clearButton = document.getElementById('clearButton');
+            const suggestionsBox = document.getElementById('suggestionsBox');
+
+            // CATEGORY IMAGES (LOCAL PATH)
+            const categoryImages = {
+                fiction: "images/category/fiction.jpeg",
+                science_fiction: "images/category/science_fiction.png",
+                romance: "images/category/romance.jpg",
+                mystery: "images/category/mystery.jpg",
+                thriller: "images/category/thriller.jpg",
+                fantasy: "images/category/fantasy.jpg",
+                biography: "images/category/biography.jpg",
+                self_help: "images/category/self_help.jpg",
+                history: "images/category/history.jpg",
+                children: "images/category/children.jpg",
+                poetry: "images/category/poetry.jpg",
+                comics: "images/category/comics.jpg",
+                adventure: "images/category/adventure.jpg",
+                horror: "images/category/horror.jpg",
+                philosophy: "images/category/philosophy.jpg",
+                business: "images/category/business.jpg",
+                psychology: "images/category/psychology.jpg",
+                education: "images/category/education.jpg",
+                travel: "images/category/travel.jpg",
+                cooking: "images/category/cooking.jpg",
+                art: "images/category/art.jpg",
+                music: "images/category/music.jpg",
+                sports: "images/category/sports.jpg",
+                law: "images/category/law.jpg",
+                young_adult: "images/category/young_adult.jpg",
+                economics: "images/category/economics.jpg",
+                spirituality: "images/category/spirituality.jpg",
+                parenting: "images/category/parenting.jpg",
+                technology: "images/category/technology.jpg",
+                health: "images/category/health.jpg"
+            };
+
+            const categories = Object.keys(booksData);
+
+            function renderCategories(list) {
+                categoriesGrid.innerHTML = '';
+                list.forEach(category => {
+                    const card = document.createElement('div');
+                    card.classList.add('category-card');
+                    card.onclick = () => window.location.href = `category.html?cat=${category}`;
+                    card.innerHTML = `
+                        <img class="category-image" src="${categoryImages[category]}" alt="${category} Image">
+                        <div class="category-name">${category.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</div>
+                        <div class="category-description">Explore ${category.replace(/_/g, ' ')} books</div>
+                    `;
+                    categoriesGrid.appendChild(card);
+                });
+            }
+
+            // Initial render
+            renderCategories(categories);
+
+            // Search and suggestion logic
+            searchInput.addEventListener('input', function() {
+                const query = searchInput.value.toLowerCase().trim();
+                clearButton.style.display = query ? 'block' : 'none';
+                suggestionsBox.innerHTML = '';
+                if (query.length > 0) {
+                    const filtered = categories.filter(cat => cat.toLowerCase().includes(query));
+                    filtered.forEach(cat => {
+                        const item = document.createElement('div');
+                        item.classList.add('suggestion-item');
+                        item.textContent = cat.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                        item.onclick = () => {
+                            searchInput.value = cat;
+                            suggestionsBox.innerHTML = '';
+                            renderCategories([cat]);
+                        };
+                        suggestionsBox.appendChild(item);
+                    });
+                }
+            });
+
+            function handleSearch() {
+                const query = searchInput.value.toLowerCase().trim();
+                if (query === '') {
+                    renderCategories(categories);
+                } else {
+                    const filtered = categories.filter(cat => cat.toLowerCase().includes(query));
+                    renderCategories(filtered);
+                }
+                suggestionsBox.innerHTML = '';
+            }
+
+            searchButton.addEventListener('click', handleSearch);
+
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleSearch();
+                }
+            });
+
+            clearButton.addEventListener('click', function() {
+                searchInput.value = '';
+                clearButton.style.display = 'none';
+                suggestionsBox.innerHTML = '';
+                renderCategories(categories);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Details</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/app.js" defer></script>
+    <style>
+        .payment-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 8px;
+            color: #fff;
+        }
+        .cart-total h3 {
+            color: #FFD700;
+            text-align: center;
+            margin: 1rem 0;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.3rem;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 0.5rem;
+            border: none;
+            border-radius: 5px;
+        }
+        .address-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <button class="back-btn" onclick="window.location.href='cart.html'">← Back</button>
+        <div class="logo" onclick="window.location.href='index.html'">📚 BookStore</div>
+    </header>
+
+    <main class="page active">
+        <div class="payment-container">
+            <div class="page-header">
+                <h1 class="page-title">Payment Details</h1>
+                <p class="page-subtitle">Complete your purchase</p>
+            </div>
+
+            <div class="cart-total">
+                <h3>Total Amount: ₹<span id="paymentTotal">0.00</span></h3>
+                <p id="buyNowItemInfo" style="text-align:center; color:#ccc;"></p>
+            </div>
+
+            <form id="paymentForm" class="payment-form">
+                <h3 style="margin-bottom: 1rem;">Customer Details</h3>
+
+                <div class="form-group">
+                    <label for="customerName">Full Name</label>
+                    <input type="text" id="customerName" required>
+                </div>
+                <div class="form-group">
+                    <label for="customerEmail">Email</label>
+                    <input type="email" id="customerEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="customerPhone">Phone</label>
+                    <input type="tel" id="customerPhone" maxlength="10" required>
+                </div>
+
+                <h4 style="margin: 1.5rem 0 1rem 0;">Delivery Address</h4>
+                
+                <!-- Address Fields in Proper Order -->
+                <div class="form-group">
+                    <label for="street">Street</label>
+                    <input type="text" id="street" required>
+                </div>
+                <div class="form-group">
+                    <label for="area">Area</label>
+                    <input type="text" id="area" required>
+                </div>
+                <div class="form-group">
+                    <label for="district">District</label>
+                    <input type="text" id="district" required>
+                </div>
+                <div class="form-group">
+                    <label for="state">State</label>
+                    <input type="text" id="state" required>
+                </div>
+                <div class="form-group">
+                    <label for="pincode">Pincode</label>
+                    <input type="text" id="pincode" maxlength="6" required>
+                </div>
+
+                <div style="text-align: center; margin-top: 2rem;">
+                    <button type="submit" class="btn btn-primary" style="padding: 1rem 2rem; font-size: 1.2rem;">
+                        Pay Now
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const paymentTotalEl = document.getElementById('paymentTotal');
+            const buyNowItemInfo = document.getElementById('buyNowItemInfo');
+
+            // Check if Buy Now item exists
+            const buyNowItem = JSON.parse(sessionStorage.getItem('buyNowItem'));
+            if (buyNowItem) {
+                paymentTotalEl.textContent = buyNowItem.price.toFixed(2);
+                buyNowItemInfo.textContent = `Buying: ${buyNowItem.title} (₹${buyNowItem.price})`;
+            } else if (sessionStorage.getItem('cartPayment')) {
+                const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+                const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                paymentTotalEl.textContent = total.toFixed(2);
+                buyNowItemInfo.textContent = `Paying for ${cart.length} item(s) in cart`;
+            } else {
+                paymentTotalEl.textContent = "0.00";
+                buyNowItemInfo.textContent = "No items selected for payment.";
+            }
+
+            // Handle form submission
+            document.getElementById('paymentForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                alert("Payment successful!");
+                sessionStorage.removeItem('buyNowItem');
+                sessionStorage.removeItem('cartPayment');
+                window.location.href = 'index.html';
+            });
+        });
+    </script>
+</body>
+</html>
